@@ -9,16 +9,16 @@ dataset:
 
 # Setup the training parameter
 train:
-  epochs: 30
-  lr: 0.0001
+  epochs: 50
+  lr: 0.0002
   lr_step: 10
   lr_gamma: 0.5
-  model_name: "baseline_model_test"
+  model_name: "final_model_test"
   checkpoint_dir: 'age\checkpoints'
   patience: 5
   early_stopping: True
-  force_cpu: True
-  model: "baseline" # [baseline, resnet, cbam]
+  force_cpu: False
+  model: "cbam" # [baseline, resnet, cbam]
   weighted_sampling: False
   grad-camp: False  
   grad_camp_sample: 0 
