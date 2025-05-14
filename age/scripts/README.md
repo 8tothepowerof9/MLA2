@@ -1,0 +1,1 @@
+The scripts folder contains core entry-point scripts for model training, evaluation, and utilities used throughout the workflow
