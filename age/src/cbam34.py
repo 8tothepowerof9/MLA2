@@ -44,7 +44,7 @@ def main():
 
     model = load_model(args.model)
     age = predict(model, args.image)
-    print(f"Predicted Age: {age} years")
+    print(f"Predicted Age: {age} days")
 
 if __name__ == "__main__":
     main()

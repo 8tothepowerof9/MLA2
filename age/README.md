@@ -21,7 +21,7 @@ Run Test Age Model on unlabeled dataset:
 
 Run Test Age Model for a random picture:
 
-`python age/src/cbam34.py --image data\train_images\hispa\101315.jpg --model checkpoints\cbam34_model\best_model.pt`
+`python age/src/cbam34.py --image age\data\train_images\hispa\101315.jpg --model age\checkpoints\cbam34_model\best_model.pt`
 
 ## Configure the code
 
