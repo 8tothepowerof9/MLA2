@@ -14,4 +14,7 @@ opencv-python
 matplotlib              
 seaborn  
 torchcam
-shap                    
+shap 
+
+# App
+streamlit
