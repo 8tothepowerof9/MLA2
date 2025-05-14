@@ -2,4 +2,3 @@
 **/test_images/
 **/__pycache__/
 **/meta_train.csv
-**/prediction_submission.csv
