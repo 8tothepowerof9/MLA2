@@ -65,16 +65,15 @@ if __name__ == "__main__":
         train_transform=train_transform,
         val_transform=val_transform,
         batch_size=32,
-        oversample=False,
     )
 
     # ----- Initialize model -----
-    model = PaperCNN(num_classes=10)
+    model = CBAMResNet18(num_classes=10)
     model = model.to(device)
 
     # ----- Define loss, optimizer, scheduler, and metric -----
-    loss_fn = nn.CrossEntropyLoss(label_smoothing=0.1).to(device)
-    # loss_fn = FocalLoss().to(device)
+    # loss_fn = nn.CrossEntropyLoss(label_smoothing=0.1).to(device)
+    loss_fn = FocalLoss().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-4)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
     metric = MulticlassF1Score(num_classes=10, average="weighted").to(device)
@@ -87,9 +86,9 @@ if __name__ == "__main__":
         scheduler=scheduler,
         metric=metric,
         device=device,
-        model_name="PaperCNN",
+        model_name="final",
         save=True,
-        mixup=False,
+        mixup=True,
     )
 
     trainer.fit(train_dataloader, val_dataloader, epochs=20)
