@@ -8,6 +8,6 @@ To train a model type, change the model architecture in train_model.py, and chan
 After that, simply change the model architecture and weights path in eval_model.py to evaluate the model.
 
 2. Other files explaination
-   The data folder contains the data to train the model. The dataloader.py contains the code to load the data, it has options such as oversample which enables oversampling in the data. The trainer.py file contains the code for the trainer which train the models. By default, it doesn't use mixup/cutmix, but you can make it uses these augmentations by setting mixup=True. The models folder contains the code for each models: CBAM variations models, resnet model (resnet18) and the independent evaluation model (paper.py)
+   The data folder contains the data to train the model. The dataloader.py contains the code to load the data, it has options such as oversample which enables oversampling in the data. The trainer.py file contains the code for the trainer which train the models. By default, it doesn't use mixup/cutmix, but you can make it uses these augmentations by setting mixup=True. The models folder contains the code for each models: CBAM variations models, resnet model (resnet18) and the independent evaluation model (paper.py). hyper.py handle the hyperparameter tuning.  
 
 Remember to add the data folder in the variety folder to train

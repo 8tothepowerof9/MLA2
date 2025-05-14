@@ -85,4 +85,4 @@ def plot_all_histories_in_dir(history_dir: str):
     plt.show()
 
 
-# plot_all_histories_in_dir("checkpoints")
+plot_all_histories_in_dir("checkpoints")

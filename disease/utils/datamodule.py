@@ -13,7 +13,8 @@ def get_dataloaders(
     num_workers=4,
     pin_memory=True,
     shuffle=True,
-    seed=42
+    seed=42, 
+    independent_test=False
 ):
     # === Step 1: Load original dataframe ===
     df = pd.read_csv(csv_path)
@@ -36,9 +37,21 @@ def get_dataloaders(
 
     # === Step 4: Balance train only ===
     _, df_train_balanced = get_balanced_dataframe(df_train, label_col, strategy=strategy)
-
+    # transform for independent test
+    if independent_test:
+        transform_train = transforms.Compose([
+                                transforms.Resize((256, 256)),
+                                transforms.RandomHorizontalFlip(p=0.5),
+                                transforms.RandomAffine(
+                                    degrees=5,
+                                    shear=0.2,
+                                    translate=(0.05, 0.05),
+                                    scale=(0.9, 1.1)
+                                ),
+                                transforms.ToTensor()
+                            ])
     # === Step 5: Define transforms ===
-    transform = transforms.Compose([
+    transform_train = transforms.Compose([
                     transforms.Resize(256),  # Resize so shorter side is 256, keeps aspect ratio
                     transforms.CenterCrop(224),  # Crop center to 224x224 (no distortion)
                     transforms.RandomHorizontalFlip(p=0.5),
@@ -47,8 +60,13 @@ def get_dataloaders(
                     transforms.ToTensor(),
                     transforms.RandomErasing(p=0.25, scale=(0.02, 0.15)),
                 ])
+    transform = transforms.Compose([
+                    transforms.Resize(256),  # Resize so shorter side is 256, keeps aspect ratio
+                    transforms.CenterCrop(224),  # Crop center to 224x224 (no distortion)
+                    transforms.ToTensor()
+                ])
     # === Step 6: Create datasets ===
-    train_ds = ImageCSVLoader(df_train_balanced, image_dir, transform, label_col)
+    train_ds = ImageCSVLoader(df_train_balanced, image_dir, transform_train, label_col)
     val_ds = ImageCSVLoader(df_val, image_dir, transform, label_col)
     test_ds = ImageCSVLoader(df_test, image_dir, transform, label_col)
 
