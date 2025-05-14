@@ -32,7 +32,7 @@ st.set_page_config(
 DISEASE_MODEL_PATH = "checkpoints/classify_diseases/model_final.pt"
 VARIETY_MODEL_PATH = "variety/checkpoints/final.pt"
 AGE_MODEL_PATH = "age/checkpoints/cbam34_model/best_model.pt"
-METADATA_PATH = "data/meta_train.csv"
+METADATA_PATH = "age/data/meta_train.csv"
 
 # Constants for age normalization
 AGE_MIN = 45.0
@@ -205,7 +205,6 @@ def get_variety_transform():
     return transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),  # Scales images from 0-255 to 0-1
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # ImageNet normalization
     ])
 
 # Disease model preprocessing
