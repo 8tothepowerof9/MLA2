@@ -262,35 +262,35 @@ if __name__ == "__main__":
         val_dataset, batch_size=32, shuffle=False, num_workers=4
     )
 
-    model = CBAMResNet18(num_classes=10)
+    model = CBAMResNet18(num_classes=10, weights="DEFAULT")
     model.load_state_dict(torch.load("checkpoints/final.pt", weights_only=True))
     model.to("cuda")
 
-    # print_macro_f1(val_dataloader, model)
+    print_macro_f1(val_dataloader, model)
 
-    # evaluate_and_plot_confusion_matrix(model, val_dataloader, val_dataset.classes)
+    evaluate_and_plot_confusion_matrix(model, val_dataloader, val_dataset.classes)
 
     # Random sample
-    # import random
+    import random
 
-    # random.seed(42)
-    # random_idx = random.randint(0, len(val_dataset) - 1)
-    # img, label = val_dataset[random_idx]
+    random.seed(42)
+    random_idx = random.randint(0, len(val_dataset) - 1)
+    img, label = val_dataset[random_idx]
 
-    # input_tensor = img.unsqueeze(0).to("cuda")
-    # output = model(input_tensor)
-    # predicted_class = output.argmax(dim=1).item()
+    input_tensor = img.unsqueeze(0).to("cuda")
+    output = model(input_tensor)
+    predicted_class = output.argmax(dim=1).item()
 
-    # gradcam = GradCAM(model, model.layer4[-1])
-    # heatmap = gradcam.generate(input_tensor, class_idx=predicted_class)
+    gradcam = GradCAM(model, model.layer4[-1])
+    heatmap = gradcam.generate(input_tensor, class_idx=predicted_class)
 
-    # show_gradcam_on_image(
-    #     img,
-    #     heatmap,
-    #     predicted_class=predicted_class,
-    #     actual_class=label,
-    #     class_names=val_dataset.classes,
-    # )
+    show_gradcam_on_image(
+        img,
+        heatmap,
+        predicted_class=predicted_class,
+        actual_class=label,
+        class_names=val_dataset.classes,
+    )
 
     show_random_prediction(
         val_dataset,
@@ -302,7 +302,7 @@ if __name__ == "__main__":
 
     print(
         predict_image(
-            "data/train_images/bacterial_leaf_streak/100042.jpg",
+            "data/train_images/bacterial_leaf_streak/100150.jpg",
             model,
             val_dataset.classes,
             device="cuda",

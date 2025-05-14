@@ -21,6 +21,7 @@ class RiceDataset(Dataset):
         target_transform=None,
         val_size: float = 0.2,
         random_seed: int = 42,
+        oversample: bool = False,
     ):
         self.image_dir = image_dir
         self.label_type = label_type
@@ -106,6 +107,7 @@ def get_dataloaders(
     train_transform=None,
     val_transform=None,
     target_transform=None,
+    oversample: bool = False,
 ):
     train_ds = RiceDataset(
         image_dir=image_dir,
@@ -116,6 +118,7 @@ def get_dataloaders(
         target_transform=target_transform,
         val_size=val_size,
         random_seed=random_seed,
+        oversample=oversample,
     )
     val_ds = RiceDataset(
         image_dir=image_dir,

@@ -65,10 +65,11 @@ if __name__ == "__main__":
         train_transform=train_transform,
         val_transform=val_transform,
         batch_size=32,
+        oversample=True,
     )
 
     # ----- Initialize model -----
-    model = CBAMResNet18(num_classes=10)
+    model = CBAMResNet18(num_classes=10, weights="DEFAULT")
     model = model.to(device)
 
     # ----- Define loss, optimizer, scheduler, and metric -----
@@ -86,7 +87,7 @@ if __name__ == "__main__":
         scheduler=scheduler,
         metric=metric,
         device=device,
-        model_name="final",
+        model_name="final_with_pretrained",
         save=True,
         mixup=True,
     )
