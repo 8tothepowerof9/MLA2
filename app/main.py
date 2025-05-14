@@ -11,6 +11,26 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
 import sys
+import argparse
+
+# Add argument parsing that defaults to values when run without arguments
+def parse_args():
+    parser = argparse.ArgumentParser(description="Paddy Doctor - AI-powered rice plant analysis")
+    parser.add_argument('--task', type=str, choices=['train', 'eval'], 
+                        default='eval', help='Task to perform')
+    parser.add_argument('--config', type=str, 
+                        default='config/default.json', help='Path to config file')
+    
+    # Check if running in Streamlit environment
+    if len(sys.argv) == 1:
+        # When running with streamlit, use default arguments
+        return parser.parse_args(['--task', 'eval', '--config', 'config/default.json'])
+    else:
+        # When running from command line, parse provided arguments
+        return parser.parse_args()
+
+# Parse arguments at the beginning
+args = parse_args()
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -820,6 +840,7 @@ def set_custom_theme():
 
 # Main application
 def main():
+    
     # Initialize session state for history
     if 'history' not in st.session_state:
         st.session_state['history'] = []
@@ -836,7 +857,7 @@ def main():
     
     # Sidebar with professional design
     with st.sidebar:
-        st.image("https://img.freepik.com/free-photo/rice-field_74190-4097.jpg?w=1380&t=st=1683900425~exp=1683901025~hmac=b1e3d2e7e8c2e1d5d2f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6", 
+        st.image("https://img.freepik.com/free-photo/rice-field_74190-4097.jpg?w=1380&t=st=1683900425~exp=1683901025~hmac=b1e3d2e7e8c2e1d5d2f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6", 
                  use_container_width=True)
         
         st.markdown("## How to use")
@@ -866,41 +887,6 @@ def main():
             
             This ensures optimal performance with our AI models.
             """)
-        
-        # Add metadata information
-        with st.expander("Metadata Integration"):
-            if 'metadata_status' in st.session_state and st.session_state['metadata_status'] == "loaded":
-                st.markdown("✅ **Metadata loaded successfully**")
-                st.markdown("""
-                The application integrates with `meta_train.csv` to provide:
-                - Ground truth disease labels
-                - Actual paddy variety information
-                - Real plant age data
-                
-                This allows for comparison between model predictions and actual values.
-                """)
-            else:
-                st.markdown("⚠️ **Metadata not loaded**")
-                st.markdown("""
-                The application will attempt to load metadata from `meta_train.csv` which should contain:
-                - `image_id`: Unique identifier for each image
-                - `label`: The category of paddy disease
-                - `variety`: The paddy variety name
-                - `age`: The age of the paddy in days
-                
-                Please ensure this file is available in the data directory.
-                """)
-        
-        # Add model status information in an expander
-        with st.expander("System Status"):
-            if 'model_status' in st.session_state:
-                for model, status in st.session_state['model_status'].items():
-                    if status == "loaded":
-                        st.markdown(f"✅ {model.title()} model: **Loaded**")
-                    else:
-                        st.markdown(f"⚠️ {model.title()} model: **Using fallback** (Error: {status})")
-            else:
-                st.markdown("⏳ Models not loaded yet")
         
         # Add history section in the sidebar
         with st.expander("Analysis History"):
@@ -933,7 +919,7 @@ def main():
             st.markdown('<div class="section-header">Upload Your Paddy Plant Image</div>', unsafe_allow_html=True)
             
             # Add preprocessing info
-            st.markdown('<div class="preprocessing-info"><strong>Image Processing:</strong> All images are automatically resized to 224×224 pixels, normalized to values between 0-1, and standardized using ImageNet mean and std for optimal AI analysis.</div>', unsafe_allow_html=True)
+            st.markdown('<div class="preprocessing-info"><strong>Image Processing:</strong> All images are automatically resized to 224×224 pixels, normalized, and standardized for optimal AI analysis.</div>', unsafe_allow_html=True)
             
             col1, col2 = st.columns([1, 1])
             
@@ -1492,6 +1478,7 @@ def main():
                 
                 1. Extracts the image ID from the filename
                 2. Looks up the corresponding metadata in the CSV file
+                
                 3. Uses this information to compare predictions with ground truth
                 4. Displays both predicted and actual values when available
                 
