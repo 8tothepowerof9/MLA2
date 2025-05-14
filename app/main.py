@@ -18,7 +18,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # Import models from their respective source files
 from age.src.models.cbam import ResNetAgeWithCBAM
 from variety.models.cbam import CBAMResNet18
-from disease.models.simple_cnn import SimpleCNN
+from disease.src.classify_diseases.models.cbam import ResNet34CBAMClassifier
 
 # Set page configuration with improved title and layout
 st.set_page_config(
@@ -29,7 +29,7 @@ st.set_page_config(
 )
 
 # Define paths to model checkpoints and data
-DISEASE_MODEL_PATH = "checkpoints/classify_diseases/model_final.pt"
+DISEASE_MODEL_PATH = "disease/checkpoints/resnet34_cbam.pt"
 VARIETY_MODEL_PATH = "variety/checkpoints/final.pt"
 AGE_MODEL_PATH = "age/checkpoints/cbam34_model/best_model.pt"
 METADATA_PATH = "age/data/meta_train.csv"
@@ -51,6 +51,18 @@ VARIETY_INFO = {
         "characteristics": "Medium duration, semi-dwarf, high-yielding variety",
         "growing_period": "115-120 days",
         "optimal_conditions": "Irrigated conditions, responsive to fertilizers"
+    },
+    "AndraPonni": {
+        "origin": "Andhra Pradesh, India",
+        "characteristics": "Medium duration, fine grain, good cooking quality",
+        "growing_period": "125-135 days",
+        "optimal_conditions": "Irrigated conditions, moderate fertility"
+    },
+    "AtchayaPonni": {
+        "origin": "Tamil Nadu, India",
+        "characteristics": "Medium duration, fine grain, good yield",
+        "growing_period": "130-140 days",
+        "optimal_conditions": "Irrigated conditions, moderate to high fertility"
     },
     "IR20": {
         "origin": "International Rice Research Institute (IRRI)",
@@ -76,6 +88,12 @@ VARIETY_INFO = {
         "growing_period": "130-135 days",
         "optimal_conditions": "Irrigated conditions, responsive to fertilizers"
     },
+    "RR": {
+        "origin": "India",
+        "characteristics": "Short duration, medium grain, disease resistant",
+        "growing_period": "105-115 days",
+        "optimal_conditions": "Irrigated conditions, suitable for multiple cropping"
+    },
     "Surya": {
         "origin": "India",
         "characteristics": "Early maturing, drought-tolerant, medium yield",
@@ -87,24 +105,6 @@ VARIETY_INFO = {
         "characteristics": "Adapted to specific agro-climatic zones",
         "growing_period": "120-130 days",
         "optimal_conditions": "Specific to local conditions"
-    },
-    "AndraPonni": {
-        "origin": "Andhra Pradesh, India",
-        "characteristics": "Medium duration, fine grain, good cooking quality",
-        "growing_period": "125-135 days",
-        "optimal_conditions": "Irrigated conditions, moderate fertility"
-    },
-    "AtchayaPonni": {
-        "origin": "Tamil Nadu, India",
-        "characteristics": "Medium duration, fine grain, good yield",
-        "growing_period": "130-140 days",
-        "optimal_conditions": "Irrigated conditions, moderate to high fertility"
-    },
-    "RR": {
-        "origin": "India",
-        "characteristics": "Short duration, medium grain, disease resistant",
-        "growing_period": "105-115 days",
-        "optimal_conditions": "Irrigated conditions, suitable for multiple cropping"
     }
 }
 
@@ -216,8 +216,11 @@ def get_disease_transform():
     return transforms.Compose([
         transforms.Resize(256),  # Resize so shorter side is 256, keeps aspect ratio
         transforms.CenterCrop(224),  # Crop center to 224x224 (no distortion)
+        transforms.RandomHorizontalFlip(p=0.5),
+        transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.05),
+        transforms.RandomRotation(degrees=10),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        transforms.RandomErasing(p=0.25, scale=(0.02, 0.15)),
     ])
 
 # Display transformation for visualization (without normalization)
@@ -259,7 +262,7 @@ def load_models():
     # Try to load disease model
     try:
         # Create the SimpleCNN model with the correct number of classes
-        disease_model = SimpleCNN(num_classes=len(DISEASE_CLASSES))
+        disease_model = ResNet34CBAMClassifier(num_classes=len(DISEASE_CLASSES))
         
         # Load the state dictionary
         disease_state_dict = torch.load(DISEASE_MODEL_PATH, map_location=torch.device('cpu'))
@@ -408,6 +411,7 @@ def predict(image, image_name, disease_model, variety_model, age_model, metadata
             disease_outputs = disease_model(disease_tensor)
             disease_probs = torch.nn.functional.softmax(disease_outputs, dim=1)[0]
             disease_idx = torch.argmax(disease_probs).item()
+
             disease_name = DISEASE_CLASSES[disease_idx]
             disease_confidence = disease_probs[disease_idx].item() * 100
             
@@ -428,6 +432,7 @@ def predict(image, image_name, disease_model, variety_model, age_model, metadata
                 "top_predictions": top_diseases,
                 "all_probabilities": {DISEASE_CLASSES[i]: disease_probs[i].item() * 100 for i in range(len(DISEASE_CLASSES))}
             }
+
         except Exception as e:
             st.error(f"Error in disease prediction: {str(e)}")
             # Set prediction status to error instead of using default values
@@ -447,7 +452,7 @@ def predict(image, image_name, disease_model, variety_model, age_model, metadata
             variety_idx = torch.argmax(variety_probs).item()
             
             # Use the actual variety names from meta_train.csv
-            variety_names = ["ADT45", "IR20", "KarnatakaPonni", "Onthanel", "Ponni", "Surya", "Zonal", "AndraPonni", "AtchayaPonni", "RR"]
+            variety_names = ['ADT45', 'AndraPonni', 'AtchayaPonni', 'IR20', 'KarnatakaPonni', 'Onthanel', 'Ponni', 'RR', 'Surya', 'Zonal']
             variety_name = variety_names[variety_idx % len(variety_names)]
             variety_confidence = variety_probs[variety_idx].item() * 100
             
