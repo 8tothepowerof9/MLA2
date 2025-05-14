@@ -66,11 +66,11 @@ class CBAM(nn.Module):
 
 
 class CBAMResNet18(nn.Module):
-    def __init__(self, num_classes=10, in_channels=3):
+    def __init__(self, num_classes=10, in_channels=3, weights=None):
         super(CBAMResNet18, self).__init__()
 
         # Load vanilla ResNet18
-        base = models.resnet18(weights=None)
+        base = models.resnet18(weights=weights)
 
         # Replace first conv layer if needed
         if in_channels != 3:

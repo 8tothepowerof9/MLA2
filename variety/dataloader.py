@@ -21,6 +21,7 @@ class RiceDataset(Dataset):
         target_transform=None,
         val_size: float = 0.2,
         random_seed: int = 42,
+        oversample: bool = False,
     ):
         self.image_dir = image_dir
         self.label_type = label_type
@@ -29,31 +30,24 @@ class RiceDataset(Dataset):
 
         df = pd.read_csv(labels_path)
 
-        # Split the dataset
+        # Split the full dataset into train and val sets
         train_df, val_df = train_test_split(
             df, test_size=val_size, random_state=random_seed, stratify=df[label_type]
         )
-
         self.metadata = train_df if split == "train" else val_df
 
-        if split == "train":
+        if oversample and split == "train":
+            # Perform oversampling
             class_dfs = []
+            max_size = self.metadata[label_type].value_counts().max()
             for class_label, group in self.metadata.groupby(label_type):
-                n = len(group)
-                if n < 1000:
-                    # Upsample
-                    sampled = resample(
-                        group, replace=True, n_samples=1000, random_state=random_seed
-                    )
-                elif n > 1000:
-                    # Downsample
-                    sampled = group.sample(
-                        n=1000, replace=False, random_state=random_seed
-                    )
-                else:
-                    sampled = group
-                class_dfs.append(sampled)
-
+                upsampled = resample(
+                    group,
+                    replace=True,
+                    n_samples=max_size,
+                    random_state=random_seed,
+                )
+                class_dfs.append(upsampled)
             self.metadata = (
                 pd.concat(class_dfs)
                 .sample(frac=1, random_state=random_seed)
@@ -68,7 +62,7 @@ class RiceDataset(Dataset):
         self.class_to_idx = {cls_name: idx for idx, cls_name in enumerate(self.classes)}
 
         for _, row in self.metadata.iterrows():
-            label_folder = row["label"]  # folder is based on 'label', not 'label_type'
+            label_folder = row["label"]  # folder is based on label column
             image_id = row["image_id"]
             image_path = os.path.join(image_dir, label_folder, image_id)
 
@@ -86,6 +80,7 @@ class RiceDataset(Dataset):
         if self.transform:
             image = self.transform(image)
 
+        # Convert class string to index
         target = self.class_to_idx[target]
 
         if self.target_transform:
@@ -106,6 +101,7 @@ def get_dataloaders(
     train_transform=None,
     val_transform=None,
     target_transform=None,
+    oversample: bool = False,
 ):
     train_ds = RiceDataset(
         image_dir=image_dir,
@@ -116,6 +112,7 @@ def get_dataloaders(
         target_transform=target_transform,
         val_size=val_size,
         random_seed=random_seed,
+        oversample=oversample,
     )
     val_ds = RiceDataset(
         image_dir=image_dir,
