@@ -15,6 +15,26 @@ from trainer import Trainer
 from models import *
 
 
+def plot_optuna_trials(study):
+    trial_ids = []
+    f1_scores = []
+
+    for trial in study.trials:
+        if trial.value is not None:
+            trial_ids.append(trial.number)
+            f1_scores.append(trial.value)
+
+    plt.figure(figsize=(10, 6))
+    plt.scatter(trial_ids, f1_scores, color="blue", s=60)
+    plt.title("Optuna Trial F1 Scores")
+    plt.xlabel("Trial ID")
+    plt.ylabel("Validation F1 Score")
+    plt.ylim(0.68, 0.92)  # consistent with previous mock plots
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+
 def objective(trial):
     # ----- Suggest hyperparameters -----
     lr = trial.suggest_categorical("lr", [1e-5, 5e-5, 1e-4, 5e-4])
@@ -88,3 +108,5 @@ if __name__ == "__main__":
     print("Best trial:")
     print(study.best_trial)
     print("Best params:", study.best_params)
+
+    plot_optuna_trials(study)
