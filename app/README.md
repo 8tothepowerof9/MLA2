@@ -1,6 +1,6 @@
 The folder stores the frontend of the app where the user can interact with three models and have the best experience
 
-To run the frontend:
+To run the frontend please follow the steps:
 
     1. Try to install the all requirements:
     `pip install -r app\requirements.txt`
