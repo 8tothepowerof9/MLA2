@@ -29,21 +29,18 @@ def plot_optuna_trials(study):
     plt.title("Optuna Trial F1 Scores")
     plt.xlabel("Trial ID")
     plt.ylabel("Validation F1 Score")
-    plt.ylim(0.68, 0.92)  # consistent with previous mock plots
+    plt.ylim(0.68, 0.92)
     plt.grid(True)
     plt.tight_layout()
     plt.show()
 
 
 def objective(trial):
-    # ----- Suggest hyperparameters -----
     lr = trial.suggest_categorical("lr", [1e-5, 5e-5, 1e-4, 5e-4])
     weight_decay = trial.suggest_categorical("weight_decay", [1e-6, 1e-5, 1e-4, 1e-3])
     step_size = trial.suggest_categorical("step_size", [5, 7, 10, 15])
     gamma = trial.suggest_categorical("gamma", [0.3, 0.5, 0.7, 0.9])
     use_mixup = trial.suggest_categorical("mixup", [True, False])
-
-    # ----- Setup everything -----
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     train_transform = transforms.Compose(
@@ -100,10 +97,10 @@ def objective(trial):
 
 if __name__ == "__main__":
     study = optuna.create_study(
-        direction="maximize",  # We're maximizing F1-score
+        direction="maximize", 
         study_name="cbam_variety_tuning",
     )
-    study.optimize(objective, n_trials=25, timeout=60 * 60)  # 25 trials or 1 hour
+    study.optimize(objective, n_trials=25, timeout=60 * 60) 
 
     print("Best trial:")
     print(study.best_trial)
