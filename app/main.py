@@ -857,8 +857,6 @@ def main():
     
     # Sidebar with professional design
     with st.sidebar:
-        st.image("https://img.freepik.com/free-photo/rice-field_74190-4097.jpg?w=1380&t=st=1683900425~exp=1683901025~hmac=b1e3d2e7e8c2e1d5d2f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6", 
-                 use_container_width=True)
         
         st.markdown("## How to use")
         st.markdown("""
@@ -1265,30 +1263,30 @@ def main():
             col1, col2, col3 = st.columns(3)
             
             with col1:
-                st.image("https://img.freepik.com/free-photo/close-up-rice-plant_23-2148535711.jpg?w=1380&t=st=1683900500~exp=1683901100~hmac=b1e3d2e7e8c2e1d5d2f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6", 
+                st.image("https://www.isaaa.org/kc/cropbiotechupdate/files/images/113202172951AM.jpg", 
                         use_container_width=True)
                 
                 st.success("Healthy Paddy")
                 st.write("✅ No disease detected")
-                st.write("Variety: Basmati")
+                st.write("Variety: Long Grain")
                 st.write("Age: 35 days")
             
             with col2:
-                st.image("https://img.freepik.com/free-photo/rice-field_74190-4097.jpg?w=1380&t=st=1683900425~exp=1683901025~hmac=b1e3d2e7e8c2e1d5d2f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6f6d6", 
+                st.image("https://plantura.garden/uk/wp-content/uploads/sites/2/2021/10/potato-diseases.jpg", 
                         use_container_width=True)
                 
                 st.error("Blast Disease")
-                st.write("⚠️ Blast disease detected")
-                st.write("Variety: Jasmine")
+                st.write("⚠️ Blight disease detected")
+                st.write("Variety: Potato")
                 st.write("Age: 60 days")
             
             with col3:
-                st.image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAcRwCL5kWrJByWlPvdnpdYR_blcAphi3alw&s", 
+                st.image("https://www.thespruce.com/thmb/Gjc2N6ApvpYnO5ji71bs6v6eBMw=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/treating-brown-spots-on-leaves-5076039-03-cf285a87f30a4a4dba4f6167e57a155e.jpg", 
                         use_container_width=True)
                 
                 st.warning("Brown Spot")
                 st.write("⚠️ Brown spot detected")
-                st.write("Variety: Long Grain")
+                st.write("Variety: Pear")
                 st.write("Age: 45 days")
 
         with tab3:
