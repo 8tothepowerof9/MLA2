@@ -13,15 +13,15 @@ train:
   lr: 0.0002
   lr_step: 10
   lr_gamma: 0.5
-  model_name: "cbam_model"
+  model_name: "model"
   checkpoint_dir: 'age\checkpoints'
   patience: 5
   early_stopping: True
   force_cpu: False
-  model: "cbam" # [baseline, resnet, cbam]
+  model: "cbam" # [baseline, resnet, cbam, other, efficientnet]
   weighted_sampling: False
   grad-camp: False  
-  grad_camp_sample: 2 
+  grad_camp_sample: 0 
   fitting: True
   plotting: True
 
