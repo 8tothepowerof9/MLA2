@@ -69,7 +69,7 @@ class RiceDataset(Dataset):
         self.class_to_idx = {cls_name: idx for idx, cls_name in enumerate(self.classes)}
 
         for _, row in self.metadata.iterrows():
-            label_folder = row["label"]  # folder is based on 'label', not 'label_type'
+            label_folder = row["label"] 
             image_id = row["image_id"]
             image_path = os.path.join(image_dir, label_folder, image_id)
 
