@@ -6,7 +6,7 @@ To run the frontend please follow the steps:
     `pip install -r app\requirements.txt`
 
     2. After install requirements, you are ready for running the app:
-    `streamlit run app/main.py`
+    `streamlit run app/main.py --server.fileWatcherType none`
 
     (Optional) You can run the app by clicking this website since it will direct you to our app that we have already deployed:
     
