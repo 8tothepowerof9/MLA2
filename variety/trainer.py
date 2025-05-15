@@ -25,13 +25,13 @@ class EarlyStopping:
 
 
 mixup_fn = Mixup(
-    mixup_alpha=0.4,  # Mixup strength
-    cutmix_alpha=1.0,  # CutMix strength
+    mixup_alpha=0.4,  
+    cutmix_alpha=1.0,  
     cutmix_minmax=None,
-    prob=1.0,  # Probability to apply (1.0 = always)
-    switch_prob=0.5,  # Mixup or CutMix
-    mode="batch",  # 'batch' works best
-    label_smoothing=0.1,  # same as in your loss
+    prob=1.0,  
+    switch_prob=0.5,  
+    mode="batch", 
+    label_smoothing=0.1,  
     num_classes=10,
 )
 
@@ -92,7 +92,7 @@ class Trainer:
             loss.backward()
             self.optimizer.step()
 
-            if variety.ndim == 2:  # Mixup target (soft labels)
+            if variety.ndim == 2:  
                 target_labels = variety.argmax(dim=1)
             else:
                 target_labels = variety
