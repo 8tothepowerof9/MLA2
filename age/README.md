@@ -6,7 +6,10 @@ First, put the data in to the `data` folder inside the `age` folder:
  
 The correct path should be: `age\data\test_images` and `age\data\train_images`
 
-Try to install all the requiremnt:
+You do not have to cd into the `age` folder, stay in the root folder to run the code 
+
+Install all the requiremnt:
+
 `pip install -r age\requirements.txt`
 
 ## Example to run the code

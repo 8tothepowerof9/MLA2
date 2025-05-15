@@ -18,7 +18,7 @@ train:
   patience: 5
   early_stopping: True
   force_cpu: True
-  model: "cbam" # [baseline, resnet, cbam]
+  model: "cbam" # [baseline, resnet, cbam, other, efficientnet]
   weighted_sampling: False
   grad-camp: False  
   grad_camp_sample: 0 
