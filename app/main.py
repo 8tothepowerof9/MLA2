@@ -49,7 +49,7 @@ st.set_page_config(
 )
 
 # Define paths to model checkpoints and data
-DISEASE_MODEL_PATH = "disease/checkpoints/resnet34_cbam.pt"
+DISEASE_MODEL_PATH = "disease/checkpoints/final.pt"
 VARIETY_MODEL_PATH = "variety/checkpoints/final.pt"
 AGE_MODEL_PATH = "age/checkpoints/cbam34_model/best_model.pt"
 METADATA_PATH = "age/data/meta_train.csv"
@@ -912,14 +912,14 @@ def main():
     # Main content area
     with main_container:
         # Create tabs for different sections
-        tab1, tab2, tab3, tab4 = st.tabs(["📷 Analysis", "📊 Sample Results", "📈 Data Insights", "ℹ️ Help & FAQ"])
+        tab1, tab2, tab3 = st.tabs(["📷 Analysis", "📊 Sample Results", "ℹ️ Help & FAQ"])
         
         with tab1:
             # Create a section header for the upload section
             st.markdown('<div class="section-header">Upload Your Paddy Plant Image</div>', unsafe_allow_html=True)
             
             # Add preprocessing info
-            st.markdown('<div class="preprocessing-info"><strong>Image Processing:</strong> All images are automatically resized to 224×224 pixels, normalized, and standardized for optimal AI analysis.</div>', unsafe_allow_html=True)
+            st.markdown('<div class="preprocessing-info"><strong>Image Processing:</strong> All images are automatically resized to 224×224 pixels, normalized to values between 0-1, and standardized using ImageNet mean and std for optimal AI analysis.</div>', unsafe_allow_html=True)
             
             col1, col2 = st.columns([1, 1])
             
@@ -1290,141 +1290,8 @@ def main():
                 st.write("⚠️ Brown spot detected")
                 st.write("Variety: Long Grain")
                 st.write("Age: 45 days")
-        
+
         with tab3:
-            # Data Insights tab
-            st.markdown('<div class="section-header">Data Insights</div>', unsafe_allow_html=True)
-            
-            # Check if metadata is available
-            if 'metadata_status' in st.session_state and st.session_state['metadata_status'] == "loaded" and not metadata_df.empty:
-                # Create visualizations based on metadata
-                st.subheader("Disease Distribution in Training Data")
-                
-                # Count disease occurrences
-                disease_counts = metadata_df['label'].value_counts()
-                
-                # Create pie chart for disease distribution
-                fig, ax = plt.subplots(figsize=(10, 6))
-                wedges, texts, autotexts = ax.pie(
-                    disease_counts, 
-                    labels=disease_counts.index, 
-                    autopct='%1.1f%%',
-                    textprops={'fontsize': 10, 'color': 'black'},
-                    colors=plt.cm.Greens(np.linspace(0.3, 0.8, len(disease_counts)))
-                )
-                
-                # Equal aspect ratio ensures that pie is drawn as a circle
-                ax.axis('equal')
-                plt.setp(autotexts, size=9, weight="bold")
-                plt.title("Distribution of Paddy Diseases in Training Data")
-                st.pyplot(fig)
-                
-                # Create two columns for age and variety visualizations
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    # Age distribution
-                    st.subheader("Age Distribution")
-                    
-                    # Create histogram for age distribution
-                    fig, ax = plt.subplots(figsize=(8, 5))
-                    sns.histplot(metadata_df['age'], bins=20, kde=True, color='#2e7d32', ax=ax)
-                    ax.set_xlabel('Age (days)')
-                    ax.set_ylabel('Count')
-                    ax.set_title('Distribution of Paddy Plant Ages')
-                    st.pyplot(fig)
-                
-                with col2:
-                    # Variety distribution
-                    st.subheader("Variety Distribution")
-                    
-                    # Count variety occurrences
-                    variety_counts = metadata_df['variety'].value_counts()
-                    
-                    # Create bar chart for variety distribution
-                    fig, ax = plt.subplots(figsize=(8, 5))
-                    bars = ax.bar(
-                        variety_counts.index, 
-                        variety_counts.values,
-                        color=plt.cm.Greens(np.linspace(0.3, 0.8, len(variety_counts)))
-                    )
-                    
-                    # Add count labels on top of bars
-                    for bar in bars:
-                        height = bar.get_height()
-                        ax.text(
-                            bar.get_x() + bar.get_width()/2.,
-                            height + 0.1,
-                            f'{height:.0f}',
-                            ha='center', 
-                            va='bottom',
-                            fontsize=8
-                        )
-                    
-                    ax.set_xlabel('Variety')
-                    ax.set_ylabel('Count')
-                    ax.set_title('Distribution of Paddy Varieties')
-                    plt.xticks(rotation=45, ha='right')
-                    plt.tight_layout()
-                    st.pyplot(fig)
-                
-                # Relationship between disease and age
-                st.subheader("Relationship Between Disease and Age")
-                
-                # Create boxplot for disease vs age
-                fig, ax = plt.subplots(figsize=(12, 6))
-                sns.boxplot(x='label', y='age', data=metadata_df, hue='label', palette='Greens', ax=ax, legend=False)
-                ax.set_xlabel('Disease')
-                ax.set_ylabel('Age (days)')
-                ax.set_title('Age Distribution by Disease Type')
-                plt.xticks(rotation=45, ha='right')
-                plt.tight_layout()
-                st.pyplot(fig)
-                
-                # Relationship between disease and variety
-                st.subheader("Disease Occurrence by Variety")
-                
-                # Create a crosstab of disease vs variety
-                disease_variety_cross = pd.crosstab(metadata_df['label'], metadata_df['variety'])
-                
-                # Create heatmap
-                fig, ax = plt.subplots(figsize=(12, 8))
-                sns.heatmap(disease_variety_cross, cmap='Greens', annot=True, fmt='d', ax=ax)
-                ax.set_xlabel('Variety')
-                ax.set_ylabel('Disease')
-                ax.set_title('Disease Occurrence by Variety')
-                plt.tight_layout()
-                st.pyplot(fig)
-                
-            else:
-                st.info("Metadata from meta_train.csv is not available. Please ensure the file is in the correct location to view data insights.")
-                
-                # Show dummy visualizations
-                st.subheader("Sample Disease Distribution (Demo)")
-                
-                # Create dummy data
-                diseases = ["bacterial_leaf_blight", "blast", "brown_spot", "normal", "tungro", "hispa"]
-                counts = [120, 150, 100, 200, 80, 70]
-                
-                # Create pie chart
-                fig, ax = plt.subplots(figsize=(10, 6))
-                wedges, texts, autotexts = ax.pie(
-                    counts, 
-                    labels=[d.replace("_", " ").title() for d in diseases], 
-                    autopct='%1.1f%%',
-                    textprops={'fontsize': 10, 'color': 'black'},
-                    colors=plt.cm.Greens(np.linspace(0.3, 0.8, len(diseases)))
-                )
-                
-                # Equal aspect ratio ensures that pie is drawn as a circle
-                ax.axis('equal')
-                plt.setp(autotexts, size=9, weight="bold")
-                plt.title("Sample Distribution of Paddy Diseases (Demo)")
-                st.pyplot(fig)
-                
-                st.info("This is a demo visualization. To see actual data insights, please ensure that the meta_train.csv file is available in the data directory.")
-        
-        with tab4:
             # Help & FAQ tab
             st.markdown('<div class="section-header">Help & Frequently Asked Questions</div>', unsafe_allow_html=True)
             
