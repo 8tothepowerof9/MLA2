@@ -1,5 +1,5 @@
 # Machine Learning Assignment 2 - Classifying disease task
-## Make sure you are at the disease/ directory before any running any command. 
+## Make sure you cd to the disease/ directory before any running any command. 
 This repository contains a complete machine learning pipeline for the task classifying rice plant diseases from images, including literature reviews for lesion masking, transfer learning, and model interpretability. Here, I will be training a model directly on the provided dataset, and I will train another on the experimental dataset, which is the result from the literature review approach. Thus, I will call the models trained on normal data 'original models' and the other on masked data 'experimental models'.
 
 ## Project Structure
@@ -24,28 +24,27 @@ This repository contains a complete machine learning pipeline for the task class
 ## Workflow Overview
 
 1. **Prepare the dataset**  
-   Place your images in `data/train_images/` and ensure metadata like `meta_train.csv` is available.
+   Takes images in `data/train_images/` and ensure metadata like `meta_train.csv` is available.
+   The data will be processed by files under utils and test folder.
 
-2. **Train a model**  
+3. **Train and evaluate a model**  
    Use the training scripts in `scripts/train/`:
    - `train_classify_diseases.py`: Train on full images
    - `train_masked_model.py`: Train on lesion-masked images
    - `new_data_train.py`: Train or fine-tune on new dataset
 
-3. **Evaluate or fine-tune**  
-   Use the `test/` folder:
-   - `testing.py`: Run model on test set and generate metrics
-   - `new_data_tune.py`: Fine-tune pre-trained model on a new dataset
-
-4. **Visualize training**  
+5. **Visualize training**  
    Training history is saved in `checkpoints/visualizations/` as `.json` files and can be plotted using the tools in `utils/`.
 
-5. **Model checkpoints**  
+6. **Model checkpoints**  
    Saved `.pt` model files can be found in the `checkpoints/` folder.
 
 ## How to Run
 Make sure you are at the disease/ directory before any running any command. 
 pip install -r requirements.txt
 python -m main --mode <model to train>
+
+or any file can be run by syntax: 
+python -m <folder>.<filename> (no .py)
 
 The arguments after --mode can be --raw, --masked or --new_data, to run the scripts to train the  models accordingly. 
