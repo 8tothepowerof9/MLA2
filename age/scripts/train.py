@@ -4,6 +4,8 @@ from src.models.resnet_age import ResNetAge
 from src.trainer.trainer import AgeTrainer
 from src.models.baseline import Baseline
 from src.models.cbam import ResNetAgeWithCBAM
+from src.models.other_model import CNNAgeRegressor
+from src.models.cbam import EfficientNetAgeWithCBAM
 
 from torchvision import transforms
 from src.utils import ModelVisualizer
@@ -58,9 +60,11 @@ def train_model(config):
     model_map = {
         'baseline': Baseline,
         'resnet': ResNetAge,
-        'cbam': ResNetAgeWithCBAM
+        'cbam': ResNetAgeWithCBAM,
+        'other': CNNAgeRegressor,
+        'efficientnet': EfficientNetAgeWithCBAM,
     }
-    model_class = model_map.get(config['train']['model'], ResNetAge)
+    model_class = model_map.get(config['train']['model'])
     model = model_class()
 
     # Trainer

@@ -9,16 +9,16 @@ dataset:
 
 # Setup the training parameter
 train:
-  epochs: 30
-  lr: 0.0001
+  epochs: 50
+  lr: 0.0002
   lr_step: 10
   lr_gamma: 0.5
-  model_name: "baseline_model_test"
+  model_name: "model"
   checkpoint_dir: 'age\checkpoints'
   patience: 5
   early_stopping: True
-  force_cpu: True
-  model: "baseline" # [baseline, resnet, cbam]
+  force_cpu: False
+  model: "cbam" # [baseline, resnet, cbam, other, efficientnet]
   weighted_sampling: False
   grad-camp: False  
   grad_camp_sample: 0 
@@ -27,10 +27,10 @@ train:
 
 # Setup the test parameter
 test:
-  test_dir: data\test_images
+  test_dir: age/data/test_images
   test_batch_size: 64
   test_image_size: 224
-  test_model_path: checkpoints/cbam34_model/best_model.pt
+  test_model_path: "age/checkpoints/cbam34_model/best_model.pt"
   test_model_name: "cbam34_model"
-  prediction_csv_path: data/prediction_submission.csv
+  prediction_csv_path: "age/data/prediction_submission.csv"
   model: "cbam"
