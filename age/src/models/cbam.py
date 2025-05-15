@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 from torchvision.models import resnet34
+from torchvision.models import efficientnet_b0
+from torchcam.methods import SmoothGradCAMpp
 
 class ChannelSpatialAttention(nn.Module):
     def __init__(self, in_channels, reduction=16):
@@ -77,3 +79,35 @@ class ResNetAgeWithCBAM(nn.Module):
     def cam_target_layer(self):
         return self.layer4[1].conv2
 
+class EfficientNetAgeWithCBAM(nn.Module):
+    def __init__(self, use_gradcam=False):
+        super().__init__()
+        base = efficientnet_b0(weights=None)
+
+        self.features = base.features
+
+        # Apply CBAM after selected stages
+        self.cbam_indices = [2, 4, 6]  # indices of blocks after which to apply CBAM
+        self.cbams = nn.ModuleList([ChannelSpatialAttention(self.features[i][0].out_channels) for i in self.cbam_indices])
+
+        self.avgpool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Linear(1280, 1)  # 1280 is the default output channel of EfficientNet-B0
+
+        if use_gradcam:
+            self.gradcam = SmoothGradCAMpp(self, target_layer=self.features[6][0])
+
+    def forward(self, x):
+        for i, block in enumerate(self.features):
+            x = block(x)
+            if i in self.cbam_indices:
+                idx = self.cbam_indices.index(i)
+                x = self.cbams[idx](x)
+
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+        x = self.fc(x)
+        return x.view(-1)
+
+    @property
+    def cam_target_layer(self):
+        return self.features[6][0]

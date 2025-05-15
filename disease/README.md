@@ -1,5 +1,5 @@
 # Machine Learning Assignment 2 - Classifying disease task
-
+## Make sure you are at the disease/ directory before any running any command. 
 This repository contains a complete machine learning pipeline for the task classifying rice plant diseases from images, including literature reviews for lesion masking, transfer learning, and model interpretability. Here, I will be training a model directly on the provided dataset, and I will train another on the experimental dataset, which is the result from the literature review approach. Thus, I will call the models trained on normal data 'original models' and the other on masked data 'experimental models'.
 
 ## Project Structure
@@ -44,6 +44,7 @@ This repository contains a complete machine learning pipeline for the task class
    Saved `.pt` model files can be found in the `checkpoints/` folder.
 
 ## How to Run
+Make sure you are at the disease/ directory before any running any command. 
 pip install -r requirements.txt
 python -m main --mode <model to train>
 
