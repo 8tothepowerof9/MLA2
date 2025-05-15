@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from torchvision import transforms
+from src.classify_diseases.models.resnet_model import ResNet18Classifier
 from src.classify_diseases.models.cbam import ResNet34CBAMClassifier
 
 class GradCAM:
@@ -72,13 +73,14 @@ def overlay_heatmap(cam, image, alpha=0.4):
 
 
 # Load model
-model = ResNet34CBAMClassifier(num_classes=10)  # set num_classes
+model = ResNet34CBAMClassifier(num_classes=10)  # set correct num_classes
+# model = ResNet18Classifier(num_classes=10)  # set correct num_classes
 # model.load_state_dict(torch.load("checkpoints/classify_diseases/model_masked_cbam34.pt", map_location="cpu"))
-model.load_state_dict(torch.load("checkpoints/classify_diseases/model_cbam.pt", map_location="cpu"))
+model.load_state_dict(torch.load("checkpoints/model_cbam.pt", map_location="cpu"))
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 
-# Pick target layer 
+# Pick target layer (usually last conv layer)
 target_layer = model.base_model.layer4[-1] 
 
 # Preprocess

@@ -1,10 +1,16 @@
 import torch
+import optuna
 from utils.datamodule import get_dataloaders
 from src.classify_diseases.models.cbam import ResNet34CBAMClassifier
 from src.classify_diseases.trainer import train_model
 from src.classify_diseases.eval import evaluate_model_tune
-def jaya_objective(hyperparams):
-    lr, mixup_alpha, cutmix_enabled = hyperparams
+import matplotlib.pyplot as plt
+
+def objective(trial):
+    # === Hyperparameter suggestions ===
+    lr = trial.suggest_float("lr", 1e-5, 1e-3, log=True)
+    mixup_alpha = trial.suggest_float("mixup_alpha", 0.1, 1.0)
+    weight_decay = trial.suggest_float("weight_decay", 1e-6, 1e-3, log=True)
 
     # === Device Setup ===
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -24,7 +30,7 @@ def jaya_objective(hyperparams):
     model = ResNet34CBAMClassifier(num_classes=len(class_names)).to(device)
 
     # === Optimizer & Loss ===
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=1e-5)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=2, factor=0.5)
     loss_fn = torch.nn.CrossEntropyLoss(label_smoothing=0.1)
 
@@ -34,10 +40,10 @@ def jaya_objective(hyperparams):
         optimizer=optimizer,
         loss_fn=loss_fn,
         device=device,
-        epochs=10,  # keep low during tuning
+        epochs=30,  
         scheduler=scheduler,
         mixup=False,
-        cutmix=bool(round(cutmix_enabled)),  # 0 or 1 float → bool
+        cutmix=True,
         save_path="checkpoints/tmp.pt",
         history_path_file=None,
         mixup_alpha=mixup_alpha
@@ -45,41 +51,37 @@ def jaya_objective(hyperparams):
 
     # === Evaluate ===
     acc = evaluate_model_tune(model, test_loader, device)
-    print(f"Hyperparams: {hyperparams}, Accuracy: {acc:.4f}")
-    return -acc  # Jaya minimizes
+    trial.set_user_attr("val_accuracy", acc)
+    return acc
 
+def plot_optuna_trials(study):
+    trial_ids = []
+    f1_scores = []
 
-import numpy as np
+    for trial in study.trials:
+        if trial.value is not None:
+            trial_ids.append(trial.number)
+            f1_scores.append(trial.value)
 
-def jaya(objective, bounds, pop_size=5, generations=5):
-    dim = len(bounds)
-    pop = np.random.rand(pop_size, dim)
-
-    for i in range(dim):
-        pop[:, i] = bounds[i][0] + pop[:, i] * (bounds[i][1] - bounds[i][0])
-
-    for gen in range(generations):
-        scores = np.array([objective(ind) for ind in pop])
-        best = pop[np.argmin(scores)]
-        worst = pop[np.argmax(scores)]
-
-        for i in range(pop_size):
-            r1, r2 = np.random.rand(dim), np.random.rand(dim)
-            pop[i] += r1 * (best - abs(pop[i])) - r2 * (worst - abs(pop[i]))
-            for d in range(dim):
-                pop[i][d] = np.clip(pop[i][d], bounds[d][0], bounds[d][1])
-
-        print(f"Gen {gen+1}: Best score = {-min(scores):.4f}")
-    
-    return pop[np.argmin(scores)], -min(scores)
+    plt.figure(figsize=(10, 6))
+    plt.scatter(trial_ids, f1_scores, color="blue", s=60)
+    plt.title("Optuna Trial F1 Scores")
+    plt.xlabel("Trial ID")
+    plt.ylabel("Validation F1 Score")
+    plt.ylim(0.68, 0.92)
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == "__main__":
-    bounds = [
-        (1e-5, 1e-3),     # learning rate
-        (0.1, 1.0),       # mixup alpha
-        (0.0, 1.0),       # cutmix enabled (0 or 1)
-    ]
+    study = optuna.create_study(direction="maximize")
+    study.optimize(objective, n_trials=15)
+    plot_optuna_trials(study)
+    print("Best trial:")
+    trial = study.best_trial
+    print(f"  Accuracy: {trial.value:.4f}")
+    print("  Params:")
+    for key, value in trial.params.items():
+        print(f" {key}: {value}")
 
-    best_params, best_score = jaya(jaya_objective, bounds, pop_size=5, generations=5)
-    print("Best hyperparameters:", best_params)
-    print("Best validation score:", best_score)
+

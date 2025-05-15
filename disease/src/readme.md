@@ -26,3 +26,6 @@ Provides evaluation and visualization tools for trained models.
 - `evaluate_model(...)`: Runs evaluation, prints metrics, plots confusion matrix.
 - `plot_confusion_matrix(...)`: Visualizes predictions.
 - `plot_training_history(...)`: Plots loss and accuracy curves from saved logs.
+
+### tuning.py
+This is where the hyperparameters are tuned. Since the model converges at around 30 epochs, I only run 15 trials on 3 most impactful parameters: learning rate, cutmix alpha, and weight decay. 
