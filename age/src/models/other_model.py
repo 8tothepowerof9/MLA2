@@ -1,44 +1,11 @@
 import torch
 import torch.nn as nn
-# class CNNAgeRegressor(nn.Module):
-#     def __init__(self):
-#         super(CNNAgeRegressor, self).__init__()
-
-#         self.conv_block = nn.Sequential(
-#             nn.Conv2d(3, 32, kernel_size=3, padding=1),
-#             nn.ReLU(),
-#             nn.MaxPool2d(kernel_size=2),
-
-#             nn.Conv2d(32, 64, kernel_size=3, padding=1),
-#             nn.ReLU(),
-#             nn.MaxPool2d(kernel_size=2),
-
-#             nn.Conv2d(64, 128, kernel_size=3, padding=1),
-#             nn.ReLU(),
-#             nn.MaxPool2d(kernel_size=2)
-#         )
-
-#         self.fc_block = nn.Sequential(
-#             nn.Flatten(),
-#             nn.Linear(128 * 28 * 28, 128),  #  input image size is 224x224
-#             nn.ReLU(),
-#             nn.Dropout(0.5),
-#             nn.Linear(128, 1)  # Regression output
-#         )
-
-#     def forward(self, x):
-#         x = self.conv_block(x)
-#         x = self.fc_block(x)
-#         return x.view(-1)
-    
-import torch
-import torch.nn as nn
 import torch.nn.functional as F
 
 class CNNAgeRegressor(nn.Module):
     def __init__(self):
         super(CNNAgeRegressor, self).__init__()
-
+        # AlexNet-like architecture
         self.features = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2),
             nn.ReLU(inplace=True),
