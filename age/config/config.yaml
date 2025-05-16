@@ -17,7 +17,7 @@ train:
   checkpoint_dir: 'age\checkpoints'
   patience: 5
   early_stopping: True
-  force_cpu: False
+  force_cpu: True
   model: "cbam" # [baseline, resnet, cbam, other, efficientnet]
   weighted_sampling: False
   grad-camp: False  

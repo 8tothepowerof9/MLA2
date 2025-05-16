@@ -2,11 +2,14 @@
 
 ## Setup for the predicting age task
 
-First, put the data in to the `data` folder inside the `age` folder:
+First, put the dataset in to the `data` folder inside the `age` folder:
  
 The correct path should be: `age\data\test_images` and `age\data\train_images`
 
-Try to install all the requiremnt:
+You do not have to cd into the `age` folder, stay in the root folder to run the code 
+
+Install all the requiremnt:
+
 `pip install -r age\requirements.txt`
 
 ## Example to run the code
@@ -34,3 +37,13 @@ The current setup is used for training the final model on the non weighted sampl
 You can turn the `grad-camp` to True and change `grad_camp_sample` to see how model focus on specific feature of the different paddy image
 
 If you computer the does not have GPU, you can change to CPU by changing the `force_cpu` to True
+
+The Grad-Cam implementation only apply for ResNet and CBAM model
+
+## Visualise the Result
+
+The final results is stored in the: 
+
+`age\checkpoints`
+
+This location can be modified in the configuration file `age\config\config.yaml`
