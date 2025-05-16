@@ -37,3 +37,5 @@ The current setup is used for training the final model on the non weighted sampl
 You can turn the `grad-camp` to True and change `grad_camp_sample` to see how model focus on specific feature of the different paddy image
 
 If you computer the does not have GPU, you can change to CPU by changing the `force_cpu` to True
+
+The Grad-Cam implementation only apply for ResNet and CBAM model
