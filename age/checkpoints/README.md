@@ -1,3 +1,3 @@
 This folder stores the trained model checkpoints for the predicting age task in the project. Each subfolder corresponds to a specific model, and contains the training & validation history, Grad-Cam of the model on specific picture, residual plot of the model on the validation dataset.
 
- 
+The final model of baseline, cbam34 and resnet model will be kept in the final submission file in order not to make the file too large. However the log and history visualization of training of other model will be kept. 
