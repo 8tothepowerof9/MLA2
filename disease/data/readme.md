@@ -3,7 +3,7 @@
 This folder contains all image datasets and metadata used throughout the pipeline, including original images, lesion-masked variants, test images, and U-Net outputs. It supports both the **main classification task** and **literature review experiments**.
 
 ## Original Data
-Used for the main task of the assignment
+Used for the main task of the assignment and should be inserted when run the code.  
 `train_images/` Original training images with labeled rice diseases.                      
 `test_images/`  Images for submission (labels unknown).     
 `meta_train.csv` Metadata CSV linking `train_images/` to disease labels and other info.  
@@ -30,6 +30,8 @@ Used for literature review and comparisons between experimented model with resea
 - Each disease class is represented by **10 randomly selected images** (i.e., balanced subset).
 - Manual masks were created using **LabelMe**, a polygon-based image annotation tool.
 - These labeled masks were converted to binary format for training the U-Net model in a supervised fashion.
+
+
 ## Masking Workflow
 1. Input `train_images/`  
 2. ➡ Predict lesion using U-Net  
